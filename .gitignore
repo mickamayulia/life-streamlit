@@ -1,0 +1,51 @@
+# ==========================================
+# Dokumen Internal Capstone & Perencanaan
+# ==========================================
+# Seluruh folder doc/ (laporan proposal, prd, stage0)
+doc/
+
+# Dokumentasi tahapan internal & log keputusan
+DATA_AUDIT.md
+DECISIONS.md
+PROJECT_CONTEXT.md
+TASKS.md
+
+# ==========================================
+# Python & Caches
+# ==========================================
+__pycache__/
+*.py[cod]
+*$py.class
+*/__pycache__/
+
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Virtual Environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# ==========================================
+# Editor & IDE Files
+# ==========================================
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ==========================================
+# OS Generated Files
+# ==========================================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ==========================================
+# Logs & Streamlit Secrets
+# ==========================================
+*.log
+scratch/
+.streamlit/secrets.toml
