@@ -8,9 +8,11 @@ def run_all_qa_tests():
     print("--- QA TEST 1: INGESTION & DATASET SUMMARY ---")
     df = load_cleaned_data()
     summary = get_dataset_summary()
-    assert len(df) == 1649, f"Expected 1649 rows, got {len(df)}"
+    assert len(df) == 2938, f"Expected 2938 rows, got {len(df)}"
+    assert df['Country'].nunique() == 193, f"Expected 193 countries, got {df['Country'].nunique()}"
     assert df['iso_alpha'].isnull().sum() == 0, "Found unmapped ISO codes!"
     assert summary['raw_rows'] == 2938, f"Raw rows expected 2938, got {summary['raw_rows']}"
+    assert summary['clean_nulls'] == 0, f"Expected 0 nulls, got {summary['clean_nulls']}"
     print("Passed: Dataset Ingestion & ISO Mapping consistent.")
 
     print("\n--- QA TEST 2: KPI CONSISTENCY (2014) ---")
@@ -34,9 +36,9 @@ def run_all_qa_tests():
     assert empty_comp.empty, "Expected empty dataframe for no countries."
 
     kpi_2015 = compute_global_kpis(df, year=2015)
-    assert kpi_2015['total_countries'] == 2
+    assert kpi_2015['total_countries'] == 183
     rank_2015 = get_country_rankings(df, year=2015, top_n=5)
-    assert len(rank_2015) == 2
+    assert len(rank_2015) == 5
     print("Passed: Edge cases (empty filters, year 2015) handled gracefully.")
 
     print("\n==============================================")

@@ -198,7 +198,11 @@ with tab_anomaly:
         options=['Life_expectancy', 'Adult_Mortality', 'GDP', 'Schooling', 'HIV/AIDS']
     )
     flag_col_name = f"{inspect_ind}_is_anomaly"
-    anom_rows = flagged_df[flagged_df[flag_col_name]][['Country', 'Year', 'Status', inspect_ind, 'Life_expectancy']].sort_values(inspect_ind, ascending=False)
+    display_cols = ['Country', 'Year', 'Status', inspect_ind]
+    if 'Life_expectancy' not in display_cols:
+        display_cols.append('Life_expectancy')
+
+    anom_rows = flagged_df[flagged_df[flag_col_name]][display_cols].sort_values(by=inspect_ind, ascending=False)
     
     st.write(f"Menampilkan **{len(anom_rows)} baris** yang memiliki nilai anomali pada `{inspect_ind}`:")
     st.dataframe(anom_rows, use_container_width=True, hide_index=True)

@@ -9,7 +9,7 @@
 
 ## 📌 Ringkasan Proyek
 
-**Life Expectancy Global Analytics Dashboard** adalah platform *Business Intelligence* (BI) dan *Exploratory Data Analysis* (EDA) berbasis web interaktif untuk menganalisis angka harapan hidup (*Life Expectancy*) di 133 negara dunia sepanjang periode 2000–2015.
+**Life Expectancy Global Analytics Dashboard** adalah platform *Business Intelligence* (BI) dan *Exploratory Data Analysis* (EDA) berbasis web interaktif untuk menganalisis angka harapan hidup (*Life Expectancy*) di **193 negara dunia** sepanjang periode 2000–2015 (2.938 observasi).
 
 Aplikasi ini menyajikan wawasan multidimensi yang mengintegrasikan determinan kesehatan, sosio-ekonomi, pendidikan, demografi, serta disparitas makro antar kelompok negara maju (*Developed*) dan negara berkembang (*Developing*).
 
@@ -25,13 +25,13 @@ Aplikasi dibangun menggunakan arsitektur **Multipage Streamlit** dengan 5 modul 
    - Visualisasi distribusi histogram & boxplot sebaran harapan hidup per kelompok status.
 
 2. **⚖️ 2_Country_Comparison:**
-   - Multi-country selector dinamis untuk membandingkan trajektori antarnegara terpilih.
+   - Multi-country selector dinamis untuk membandingkan trajektori antarnegara terpilih dari 193 negara.
    - Grafik deret waktu multi-line interaktif dengan tooltip terpadu.
    - Tabel performa pertumbuhan otomatis (*Start Value*, *End Value*, *Net Change*, dan *Growth %*).
    - Profil komparasi multidimensi indikator kesehatan dan sosio-ekonomi.
 
 3. **🗺️ 3_Geospatial_Explorer:**
-   - Peta koroplet dunia interaktif berbasis kode standar **ISO-3 Alpha** (133/133 negara terpetakan 100%).
+   - Peta koroplet dunia interaktif berbasis kode standar **ISO-3 Alpha** (**193/193 negara terpetakan 100%**).
    - Dukungan zoom, pan, rotasi bola dunia 3D (*Orthographic Globe*), dan seleksi gradien warna (*Viridis, Plasma, Sunset, dll*).
    - Tooltip kustom detail dan penanganan transparan negara tanpa data (*No Data Available*).
    - Tabel peringkat Top 10 Tertinggi dan Bottom 10 Terendah per indikator.
@@ -42,7 +42,11 @@ Aplikasi dibangun menggunakan arsitektur **Multipage Streamlit** dengan 5 modul 
    - Mesin inspeksi anomali (*Outlier Detection*) non-destruktif berbasis metode IQR 1.5x dan Z-Score.
 
 5. **📋 5_Data_Audit_and_Methodology:**
-   - Transparansi komparasi data mentah Kaggle (2.938 baris) vs data yang digunakan (1.649 baris).
+   - Metodologi **Two-Step Median Imputation**:
+     1. Nilai kosong diisi dengan median variabel tersebut pada negara yang sama.
+     2. Nilai yang masih kosong diisi dengan median seluruh data (global median).
+     3. Metode median dipilih karena sebagian besar variabel memiliki distribusi miring dan mengandung pencilan, sehingga median lebih stabil terhadap nilai ekstrim. Setelah proses ini, jumlah missing value menjadi 0.
+   - Mempertahankan 100% data mentah (2.938 baris observasi pada 193 negara).
    - Kamus data lengkap (*Data Dictionary*) 22 atribut.
    - Dokumentasi batasan metodologis CRISP-DM dan penegasan prinsip non-kausalitas (*correlation does not imply causation*).
 
@@ -60,16 +64,28 @@ Buka terminal (Command Prompt / PowerShell / Bash) di folder proyek:
 cd "d:/Kuliah/Semester 7/CAPSTONE/PROJECT"
 ```
 
-### 3. Instalasi Dependensi
-Jalankan perintah instalasi dependensi dari file `requirements.txt`:
+### 3. Instalasi Dependensi & Pengaturan Environment
+Pastikan dependensi terinstal pada Python environment yang digunakan:
 ```bash
 pip install -r requirements.txt
 ```
+
+> [!TIP]
+> **Mengatasi Garis Merah di Editor (VS Code / Cursor: "Cannot find module"):**
+> 1. Buka file Python apa saja (misal `app.py`).
+> 2. Tekan **`Ctrl + Shift + P`** pada keyboard.
+> 3. Ketik dan pilih: **`Python: Select Interpreter`**.
+> 4. Pilih Python yang sesuai (default: `Python 3.12.x` tempat dependensi diinstal).
+> 5. File konfigurasi [.vscode/settings.json](file:///.vscode/settings.json) sudah otomatis disediakan dalam proyek ini untuk menambahkan path workspace (`PYTHONPATH`) agar seluruh import `from src...` langsung terdeteksi tanpa error garis merah.
 
 ### 4. Menjalankan Dashboard
 Jalankan aplikasi menggunakan Streamlit:
 ```bash
 streamlit run app.py
+```
+atau melalui module Python:
+```bash
+python -m streamlit run app.py
 ```
 Aplikasi akan otomatis terbuka di browser default Anda pada alamat:
 👉 **`http://localhost:8501`**

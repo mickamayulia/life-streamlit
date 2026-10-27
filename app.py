@@ -115,7 +115,7 @@ with col5:
                 5. Data Audit & Methodology
             </div>
             <div style="font-size: 0.84rem; color: #94a3b8; line-height: 1.45;">
-                Transparansi perbandingan raw CSV (2.938 baris) vs cleaned dataset (1.649 baris), kamus data, dan batasan analisis.
+                Metodologi Two-Step Median Imputation (2.938 baris & 193 negara utuh), kamus data 22 atribut, dan batasan analisis CRISP-DM.
             </div>
         </div>
         """,

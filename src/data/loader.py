@@ -1,6 +1,6 @@
 """
 Data Loader & Preprocessing Layer for Life Expectancy Analytics Dashboard
-Handles loading raw and cleaned datasets, ISO-3 code enrichment, and validation caching.
+Handles loading raw, cleaned, and imputed datasets, ISO-3 code enrichment, and validation caching.
 """
 
 from pathlib import Path
@@ -12,8 +12,18 @@ from src.utils.geo_mapping import COUNTRY_TO_ISO3
 
 # File Paths
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
-CLEANED_DATA_PATH = BASE_DIR / "excel" / "life_expectancy_cleaned_dataset.xlsx"
 RAW_DATA_PATH = BASE_DIR / "excel" / "Life Expectancy Data.csv"
+CLEANED_DATA_PATH = BASE_DIR / "excel" / "life_expectancy_cleaned_dataset.xlsx"
+IMPUTED_DATA_PATH = BASE_DIR / "excel" / "life_expectancy_imputed_dataset.xlsx"
+
+# Standard Column Names (clean snake_case)
+STANDARD_COLUMNS = [
+    'Country', 'Year', 'Status', 'Life_expectancy', 'Adult_Mortality',
+    'infant_deaths', 'Alcohol', 'percentage_expenditure', 'Hepatitis_B',
+    'Measles', 'BMI', 'under-five_deaths', 'Polio', 'Total_expenditure',
+    'Diphtheria', 'HIV/AIDS', 'GDP', 'Population', 'thinness__1-19_years',
+    'thinness_5-9_years', 'Income_composition_of_resources', 'Schooling'
+]
 
 # Standard Numeric Indicators
 NUMERIC_INDICATORS = [
@@ -61,15 +71,49 @@ INDICATOR_METADATA = {
 }
 
 
+def impute_raw_data(df_raw: pd.DataFrame) -> pd.DataFrame:
+    """
+    Applies Two-Step Median Imputation to raw WHO life expectancy data:
+    1. Nilai kosong diisi dengan median variabel tersebut pada negara yang sama.
+    2. Nilai yang masih kosong diisi dengan median seluruh data (global median).
+    Metode median dipilih karena sebagian besar variabel memiliki distribusi miring
+    dan mengandung pencilan, sehingga median lebih stabil terhadap nilai ekstrim.
+    Setelah proses ini, jumlah missing value menjadi 0.
+    """
+    df = df_raw.copy()
+    # Normalize column names
+    if len(df.columns) == len(STANDARD_COLUMNS):
+        df.columns = STANDARD_COLUMNS
+
+    numeric_cols = [c for c in df.columns if c not in ['Country', 'Year', 'Status']]
+
+    # Step 1: Median per country
+    for col in numeric_cols:
+        df[col] = df.groupby('Country')[col].transform(lambda s: s.fillna(s.median()))
+
+    # Step 2: Global median for remaining nulls
+    for col in numeric_cols:
+        df[col] = df[col].fillna(df[col].median())
+
+    return df
+
+
 @st.cache_data(show_spinner=False)
 def load_cleaned_data() -> pd.DataFrame:
     """
-    Loads the cleaned Excel dataset, validates structure, and enriches with ISO-3 country codes.
+    Loads the full imputed dataset (2,938 rows, 193 countries, 0 missing values),
+    validates structure, and enriches with ISO-3 country codes.
+    Falls back to dynamic imputation from raw CSV if Excel file is missing.
     """
-    if not CLEANED_DATA_PATH.exists():
-        raise FileNotFoundError(f"Cleaned dataset not found at: {CLEANED_DATA_PATH}")
-
-    df = pd.read_excel(CLEANED_DATA_PATH)
+    if IMPUTED_DATA_PATH.exists():
+        df = pd.read_excel(IMPUTED_DATA_PATH)
+    elif RAW_DATA_PATH.exists():
+        df_raw = load_raw_data()
+        df = impute_raw_data(df_raw)
+    elif CLEANED_DATA_PATH.exists():
+        df = pd.read_excel(CLEANED_DATA_PATH)
+    else:
+        raise FileNotFoundError(f"No life expectancy dataset found in: {BASE_DIR / 'excel'}")
 
     # Ensure Country and Year types
     df['Country'] = df['Country'].astype(str).str.strip()
@@ -98,7 +142,7 @@ def load_raw_data() -> pd.DataFrame:
 
 def get_dataset_summary() -> dict:
     """
-    Returns quick audit summary metrics comparing raw vs cleaned dataset.
+    Returns quick audit summary metrics comparing raw vs imputed dataset.
     """
     df_clean = load_cleaned_data()
     try:
@@ -107,7 +151,7 @@ def get_dataset_summary() -> dict:
         raw_countries = df_raw['Country'].nunique()
         raw_nulls = int(df_raw.isnull().sum().sum())
     except Exception:
-        raw_rows, raw_cols, raw_countries, raw_nulls = 2938, 22, 193, 2735
+        raw_rows, raw_cols, raw_countries, raw_nulls = 2938, 22, 193, 2563
 
     clean_rows, clean_cols = df_clean.shape
     clean_countries = df_clean['Country'].nunique()

@@ -45,6 +45,7 @@ def compute_global_kpis(df: pd.DataFrame, year: Optional[int] = None) -> Dict[st
         'min_life_expectancy': round(float(le.min()), 2),
         'max_life_expectancy': round(float(le.max()), 2),
         'total_countries': int(sub_df['Country'].nunique()),
+        'overall_countries': int(df['Country'].nunique()),
         'developing_countries': int(status_counts.get('Developing', 0)),
         'developed_countries': int(status_counts.get('Developed', 0)),
         'developing_avg_le': round(float(dev_le), 2) if not np.isnan(dev_le) else 0.0,

@@ -55,10 +55,11 @@ if kpis:
             accent="rose"
         )
     with c4:
+        sub_text = f"{kpis['total_countries']} negara tercatat di {filters['year']} ({kpis['developed_countries']} Maju | {kpis['developing_countries']} Berkembang)" if kpis['total_countries'] < kpis['overall_countries'] else f"{kpis['developed_countries']} Maju | {kpis['developing_countries']} Berkembang"
         render_metric_card(
-            label="Cakupan Observasi Negara",
-            value=f"{kpis['total_countries']} Negara",
-            sub=f"{kpis['developed_countries']} Maju | {kpis['developing_countries']} Berkembang",
+            label="Total Negara Terpetakan",
+            value=f"{kpis['overall_countries']} Negara",
+            sub=sub_text,
             accent="emerald"
         )
 

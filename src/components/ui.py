@@ -20,6 +20,23 @@ def apply_custom_css():
             font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
         }
 
+        /* Hide default Streamlit multipage navigation tabs at the very top of sidebar */
+        [data-testid="stSidebarNav"] {
+            display: none !important;
+        }
+
+        /* Style sidebar page links */
+        [data-testid="stSidebar"] [data-testid="stPageLink-NavLink"] {
+            border-radius: 8px;
+            padding: 8px 12px;
+            margin-bottom: 4px;
+            transition: all 0.2s ease;
+        }
+        [data-testid="stSidebar"] [data-testid="stPageLink-NavLink"]:hover {
+            background-color: rgba(2, 132, 199, 0.15) !important;
+            transform: translateX(3px);
+        }
+
         /* Metric Card Styling */
         .metric-card {
             background: linear-gradient(135deg, rgba(17, 24, 39, 0.8) 0%, rgba(31, 41, 55, 0.6) 100%);

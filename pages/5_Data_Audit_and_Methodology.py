@@ -70,13 +70,17 @@ tab_comp, tab_dict, tab_notes = st.tabs([
 ])
 
 with tab_comp:
-    st.markdown("#### Perbandingan Struktur Data")
+    st.markdown("#### Metodologi Imputasi Missing Values & Struktur Data")
     st.markdown(
         """
-        Pada dataset mentah WHO dari Kaggle (`Life Expectancy Data.csv`), terdapat **2.938 observasi** pada 193 negara. 
-        Namun, file yang tersedia di folder proyek (`life_expectancy_cleaned_dataset.xlsx`) memiliki **1.649 observasi** pada 133 negara.
-        Reduksi 1.289 baris (~43,8%) terjadi akibat proses eliminasi baris (*listwise deletion*) pada baris-baris yang memiliki missing value tinggi 
-        (seperti `Population`, `Hepatitis B`, `GDP`, dan `Total expenditure`).
+        Pada dataset mentah WHO dari Kaggle (`Life Expectancy Data.csv`), terdapat **2.938 observasi** pada **193 negara** dengan **2.563 total missing values** yang tersebar di berbagai indikator numerik.
+        
+        Untuk mempertahankan seluruh baris dan representasi negara tanpa membuang informasi (berbeda dari pemotongan baris/*listwise deletion* terdahulu), sistem menerapkan **Two-Step Median Imputation**:
+        1. **Nilai kosong diisi dengan median variabel tersebut pada negara yang sama.**
+        2. **Nilai yang masih kosong diisi dengan median seluruh data.**
+        
+        > **Justifikasi Metodologis:**  
+        > *Metode median dipilih karena sebagian besar variabel memiliki distribusi miring dan mengandung pencilan, sehingga median lebih stabil terhadap nilai ekstrim. Setelah proses ini, jumlah missing value menjadi 0.*
         """
     )
 
@@ -117,8 +121,8 @@ with tab_notes:
         1. **Larangan Klaim Kausalitas (*No Causality Claim*):**  
            Proyek ini dirancang sebagai platform *Exploratory Data Analysis* (EDA) deskriptif. Hubungan korelasi tinggi (seperti antara lama sekolah dan harapan hidup) tidak boleh diinterpretasikan sebagai bukti sebab-akibat deterministik tanpa eksperimen acak atau pemodelan kausal lanjutan.
         
-        2. **Panel Data Tidak Seimbang (*Unbalanced Panel*):**  
-           Meskipun rentang tahun mencakup 2000–2015, tidak semua 133 negara memiliki catatan tahun yang lengkap (hanya 2 negara yang memiliki 16 tahun lengkap, sementara tahun 2015 hanya tercatat untuk 2 negara). Oleh karena itu, tahun **2014 dipilih sebagai default snapshot komparasi global paling representatif** (mencakup 131 negara).
+        2. **Panel Data Lintas Waktu (*Historical Panel Observations*):**  
+           Dataset mencakup rentang waktu 2000–2015 untuk 193 negara dunia (183 negara tercatat konsisten setiap tahun, dan 10 negara tercatat parsial pada tahun 2013). Tahun **2014 dipilih sebagai default snapshot komparasi global terkini** yang mencakup 183 negara secara serempak.
         
         3. **Skala Kematian Bayi & Balita (*Scale Inconsistencies*):**  
            Pada dataset publik WHO/Kaggle, nilai `infant_deaths` dan `under-five_deaths` pada negara berpenduduk sangat besar (seperti India) mencatat nilai absolut dalam ribuan jiwa, bukan rasio per 1.000 kelahiran hidup. Analis disarankan mengacu pada angka relatif per kapita untuk komparasi lintas negara.
